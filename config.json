@@ -9,5 +9,8 @@
             "direction": "horizontal",
             "rotation": 0
         }
+    },
+    "web": {
+        "port": 80
     }
 }
