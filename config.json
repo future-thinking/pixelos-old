@@ -1,0 +1,13 @@
+{
+    "screen": {
+        "width": 12,
+        "height": 12,
+        "gpio": 18,
+        "brightness": 200,
+        "dma": 10,
+        "orientation": {
+            "direction": "horizontal",
+            "rotation": 0
+        }
+    }
+}
