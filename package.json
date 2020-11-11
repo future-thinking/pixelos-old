@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/future-thinking/pixelos#readme",
   "dependencies": {
+    "chalk": "^4.1.0",
     "color-convert": "^2.0.1"
   }
 }
