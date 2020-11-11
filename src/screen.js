@@ -1,4 +1,5 @@
 const colorConvert = require("color-convert");
+const chalk = require("chalk");
 
 /**
  * Way to store a color for a pixel;
@@ -35,12 +36,19 @@ class Frame {
     }
 
     getGrid() {return this.grid;}
+    
+    setGrid(grid) {this.grid = grid;}
+
+    static fromGrid(grid) {
+        let frame = new Frame(0, 0);
+        frame.setGrid(grid);
+    }
 
     /**
      * Shift Rows and Collums.
      */
-    convertRowColumn() {
-        let grid = this.grid;
+    static convertRowColumn(frame) {
+        let grid = frame.getGrid();
         let width = grid.length;
         let height = grid[0].length;
 
@@ -48,12 +56,23 @@ class Frame {
         for (let x = 0; x < height; x++) {
             let row = [];
             for (let y = 0; y < width; y++) {
-                row.push(this.grid[y][x]);
+                row.push(grid[y][x]);
             }
             inversed.push(row);
         }
 
-        return inversed;
+        return Frame.fromGrid(inversed);
+    }
+
+    toConsoleOutput() {
+        let output = "";
+        this.grid.forEach(row => {
+            row.forEach(color => {
+                output += chalk.rgb(color.getR(), color.getG(), color.getB())("██ ");
+            })
+            output += "\n";
+        })
+        return output;
     }
 
     /**
