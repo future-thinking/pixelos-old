@@ -10,10 +10,6 @@ class Color {
         this.color = [r, g, b];
     }
 
-    constructor(hex) {
-        this.color = colorConvert.hex.rgb(hex);
-    }
-
     getR() {return this.color[0]}
     getG() {return this.color[1]}
     getB() {return this.color[2]}
@@ -25,12 +21,12 @@ class Frame {
     grid;
 
     constructor(width, height) {
-        grid = [];
+        this.grid = [];
         for (let y = 0; y < height; y++) {
             let row = [];
             for (let x = 0; x < width; x++)
                 row.push(new Color(0, 0, 0));
-            this.grid.append(row);
+            this.grid.push(row);
         }
     }
 
@@ -38,17 +34,20 @@ class Frame {
         this.grid[x][y] = color;
     }
 
+    getGrid() {return this.grid;}
+
     /**
      * Shift Rows and Collums.
      */
-    convertRowColumn(grid) {
+    convertRowColumn() {
+        let grid = this.grid;
         let width = grid.length;
         let height = grid[0].length;
 
         let inversed = [];
-        for (let x = height; x < height; x++) {
+        for (let x = 0; x < height; x++) {
             let row = [];
-            for (let y = width; y < width; y++) {
+            for (let y = 0; y < width; y++) {
                 row.push(this.grid[y][x]);
             }
             inversed.push(row);
@@ -72,7 +71,7 @@ class Frame {
             horizontal = !horizontal;
 
         if (!horizontal)
-            grid = this.convertRowColumn(this.grid);
+            grid = this.convertRowColumn();
 
         invertAll = false;
         if (startCorner == 2 || startCorner == 1) {
@@ -114,6 +113,8 @@ class Screen {
         this.config = config;
         if (!emulate)
             ws281x = require('rpi-ws281x-v2');
+        
+        this.currentFrame = new Frame(config.width, config.height);
     }
 
     init() {
@@ -125,8 +126,6 @@ class Screen {
             dma: config.dma, 
             brightness: config.brightness
         });
-
-        this.currentFrame = new Frame(config.width, config.height);
     }
 
     updateScreen() {
