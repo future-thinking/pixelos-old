@@ -1,27 +1,26 @@
-const colorConvert = require("color-convert");
-const chalk = require("chalk");
+import chalk from "chalk";
 
 /**
  * Way to store a color for a pixel;
  */
-class Color {
-    color;
+export class Color {
+    color: Array<number>;
 
-    constructor(r, g, b) {
+    constructor(r: number, g: number, b: number) {
         this.color = [r, g, b];
     }
 
-    getR() {return this.color[0]}
-    getG() {return this.color[1]}
-    getB() {return this.color[2]}
+    getR(): number {return this.color[0]}
+    getG(): number {return this.color[1]}
+    getB(): number {return this.color[2]}
 }
 
 
 /** A complete grid of colors to represent a frame on the screen. */
-class Frame {
-    grid;
+export class Frame {
+    grid: Array<Array<Color>>;
 
-    constructor(width, height) {
+    constructor(width: number, height: number) {
         this.grid = [];
         for (let y = 0; y < height; y++) {
             let row = [];
@@ -31,40 +30,21 @@ class Frame {
         }
     }
 
-    setPixel(x, y, color) {
+    setPixel(x: number, y: number, color: Color) {
         this.grid[x][y] = color;
     }
 
-    getGrid() {return this.grid;}
+    getGrid(): Array<Array<Color>> {return this.grid;}
     
-    setGrid(grid) {this.grid = grid;}
+    setGrid(grid: Array<Array<Color>>) {this.grid = grid;}
 
-    static fromGrid(grid) {
+    static fromGrid(grid: Array<Array<Color>>): Frame {
         let frame = new Frame(0, 0);
         frame.setGrid(grid);
+        return frame;
     }
 
-    /**
-     * Shift Rows and Collums.
-     */
-    static convertRowColumn(frame) {
-        let grid = frame.getGrid();
-        let width = grid.length;
-        let height = grid[0].length;
-
-        let inversed = [];
-        for (let x = 0; x < height; x++) {
-            let row = [];
-            for (let y = 0; y < width; y++) {
-                row.push(grid[y][x]);
-            }
-            inversed.push(row);
-        }
-
-        return Frame.fromGrid(inversed);
-    }
-
-    toConsoleOutput() {
+    toConsoleOutput(): string {
         let output = "";
         this.grid.forEach(row => {
             row.forEach(color => {
@@ -81,7 +61,7 @@ class Frame {
      * @param {*} startCorner The corner of the snake to start in; 0 - 3; 0 is top left; clockwise
      * @param {boolean} horizontal If the snake is horizontal
      */
-    getPixelSnake(startCorner, horizontal) {
+    getPixelSnake(startCorner: number, horizontal: boolean): Array<Color> {
         let snake = [];
 
         let grid = this.grid;
@@ -89,15 +69,12 @@ class Frame {
         if (startCorner == 3 || startCorner == 1)
             horizontal = !horizontal;
 
-        if (!horizontal)
-            grid = this.convertRowColumn();
-
-        invertAll = false;
+        let invertAll = false;
         if (startCorner == 2 || startCorner == 1) {
             invertAll = true;
         }
 
-        reversed = startCorner % 2 == 0;
+        let reversed = startCorner % 2 == 0;
 
         for (let x = 0; x < grid.length; x++) {
             for (let y = 0; y < grid[0].length; y++) {
@@ -106,9 +83,9 @@ class Frame {
 
                 if (invertAll) {
                     x = grid.length - x;
-                    y = grid[0].leds - y;
+                    y = grid[0].length - y;
                 }
-                snake.push(grid[x][(reversed ? y : grid[0].length - y)]);
+                snake.push(grid[x][(reversed ? y : grid[0].length - y - 1)]);
             }
 
             reversed = !reversed;
@@ -123,22 +100,22 @@ class Frame {
 /**
  * Class for interfacing with hardware screen
  */
-class Screen {
-    ws281x;
+export class TableScreen {
+    ws281x: any;
     currentFrame;
     config;
     
-    constructor(emulate, config) {
+    constructor(emulate: boolean, config: any) {
         this.config = config;
         if (!emulate)
-            ws281x = require('rpi-ws281x-v2');
+            this.ws281x = require('rpi-ws281x-v2');
         
         this.currentFrame = new Frame(config.width, config.height);
     }
 
     init() {
         let config = this.config;
-        ws281x.configure({
+        this.ws281x.configure({
             leds: config.width * config.height, 
             gpio: config.gpio,
             type: "GRB", 
@@ -154,10 +131,4 @@ class Screen {
         
         this.ws281x.render(pixels);
     }
-}
-
-module.exports = {
-    Color: Color,
-    Screen: Screen,
-    Frame: Frame,
 }
