@@ -10,6 +10,9 @@
             "rotation": 0
         }
     },
+    "emulator": {
+        "onlyEmulate": false
+    },
     "web": {
         "port": 80
     }

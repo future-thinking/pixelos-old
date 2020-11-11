@@ -1,7 +1,5 @@
 import path from "path";
-
-const config = require(path.join(__dirname, "./config.json"));
-
 import {TableScreen, Color, Frame} from "./libs/screen";
+import config from "./config.json";
 
-var mainScreen = new TableScreen(false, config.screen);
+var mainScreen = new TableScreen(config.emulator.onlyEmulate, config.screen);
