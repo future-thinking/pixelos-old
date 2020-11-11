@@ -1,14 +1,22 @@
+const colorConvert = require("color-convert");
+
 /**
  * Way to store a color for a pixel;
  */
 class Color {
-    constructor(r, g, b) {
+    color;
 
+    constructor(r, g, b) {
+        this.color = [r, g, b];
     }
 
     constructor(hex) {
-
+        this.color = colorConvert.hex.rgb(hex);
     }
+
+    getR() {return this.color[0]}
+    getG() {return this.color[1]}
+    getB() {return this.color[2]}
 }
 
 
@@ -128,4 +136,10 @@ class Screen {
         
         this.ws281x.render(pixels);
     }
+}
+
+module.exports = {
+    Color: Color,
+    Screen: Screen,
+    Frame: Frame,
 }

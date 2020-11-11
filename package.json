@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/future-thinking/pixelos/issues"
   },
-  "homepage": "https://github.com/future-thinking/pixelos#readme"
+  "homepage": "https://github.com/future-thinking/pixelos#readme",
+  "dependencies": {
+    "color-convert": "^2.0.1"
+  }
 }
