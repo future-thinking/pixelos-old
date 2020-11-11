@@ -12,7 +12,7 @@ PixelOS is a node.js driven software to power led matrices.
     $ git clone https://github.com/future-thinking/pixelos.git
     ```
     or download the zip file directly from Github.
- - `cd` into the cloned directory and run `npm install && tsc`
+ - `cd` into the cloned directory and run `npm install`
 
 ### Configuring
 Edit the config file located `dist/config.json` to change the default settings.

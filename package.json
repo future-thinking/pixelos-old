@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node ."
+    "start": "tsc && node .",
+    "postinstall": "npx tsc"
   },
   "repository": {
     "type": "git",
