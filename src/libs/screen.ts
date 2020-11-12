@@ -66,7 +66,7 @@ export class Frame {
 
         for (let x = 0; x < this.grid.length; x++) {
             for (let y = 0; y < this.grid.length; y++) {
-                rotated[x][y] = this.grid[this.grid.length - y - 1][x];
+                rotated[x][y] = this.grid[this.grid.length - y - 1][x].clone();
             }
         }
 
