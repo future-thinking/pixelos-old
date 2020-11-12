@@ -1,0 +1,5 @@
+{
+    "name": "Screen Calibrater",
+    "main": "screenCalibrate.js",
+    "tickspeed": 8
+}

@@ -1,4 +1,5 @@
 {
+    "name": "Snake Game",
     "main": "snake.js",
     "tickspeed": 5
 }
