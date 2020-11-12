@@ -1,4 +1,4 @@
-import {TableScreen, Color, Frame} from "./libs/screen";
+import { TableScreen, Color, Frame } from "./libs/screen";
 import config from "./config.json";
 import { ModuleManager } from "./libs/modules";
 import path from "path";
