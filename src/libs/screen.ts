@@ -20,9 +20,9 @@ export class Color {
 export class Frame {
     grid: Array<Array<Color>>;
 
-    constructor(width: number, height: number) {
+    constructor(width: number) {
         this.grid = [];
-        for (let y = 0; y < height; y++) {
+        for (let y = 0; y < width; y++) {
             let row = [];
             for (let x = 0; x < width; x++)
                 row.push(new Color(0, 0, 0));
@@ -39,7 +39,7 @@ export class Frame {
     setGrid(grid: Array<Array<Color>>) {this.grid = grid;}
 
     static fromGrid(grid: Array<Array<Color>>): Frame {
-        let frame = new Frame(0, 0);
+        let frame = new Frame(0);
         frame.setGrid(grid);
         return frame;
     }
@@ -55,44 +55,31 @@ export class Frame {
         return output;
     }
 
-    /**
-     * Please dont look at this code. It converts a grid into a list. Its horrible.
-     * 
-     * @param {*} startCorner The corner of the snake to start in; 0 - 3; 0 is top left; clockwise
-     * @param {boolean} horizontal If the snake is horizontal
-     */
-    getPixelSnake(startCorner: number, horizontal: boolean): Array<Color> {
-        let snake = [];
+    rotate90deg(): void {
+        let rotated: Array<Array<Color>> = [];
+        for (let n = 0; n < this.grid.length; n++)
+            rotated.push([]);
 
-        let grid = this.grid;
-
-        if (startCorner == 3 || startCorner == 1)
-            horizontal = !horizontal;
-
-        let invertAll = false;
-        if (startCorner == 2 || startCorner == 1) {
-            invertAll = true;
-        }
-
-        let reversed = startCorner % 2 == 0;
-
-        for (let x = 0; x < grid.length; x++) {
-            for (let y = 0; y < grid[0].length; y++) {
-                let useX = x;
-                let useY = reversed ? y : grid[0].length - y;
-
-                if (invertAll) {
-                    x = grid.length - x;
-                    y = grid[0].length - y;
-                }
-                snake.push(grid[x][(reversed ? y : grid[0].length - y - 1)]);
+        for (let x = 0; x < this.grid.length; x++) {
+            for (let y = 0; y < this.grid.length; y++) {
+                rotated[x][y] = this.grid[this.grid.length - y - 1][x];
             }
-
-            reversed = !reversed;
         }
 
-        return snake;
+        this.grid = rotated;
+    }
 
+    rotate(rotations: number): void {
+        if (rotations == 0)
+            return;
+        if (rotations < 0) {
+            rotations = rotations % -4;
+            rotations = 4 + rotations;
+        }
+        rotations = rotations % 4;
+        for (let i = 0; i < rotations; i++) {
+            this.rotate90deg();
+        }
     }
 }
 
@@ -110,13 +97,13 @@ export class TableScreen {
         if (!emulate)
             this.ws281x = require('rpi-ws281x-v2');
         
-        this.currentFrame = new Frame(config.width, config.height);
+        this.currentFrame = new Frame(config.width);
     }
 
     init() {
         let config = this.config;
         this.ws281x.configure({
-            leds: config.width * config.height, 
+            leds: Math.pow(config.width, 2), 
             gpio: config.gpio,
             type: "GRB", 
             dma: config.dma, 
@@ -125,10 +112,5 @@ export class TableScreen {
     }
 
     updateScreen() {
-        let pixels = this.currentFrame.getPixelSnake(
-            this.config.orientation.rotation, 
-            this.config.orientation.horizontal == "horizontal");
-        
-        this.ws281x.render(pixels);
     }
 }
