@@ -21,3 +21,11 @@ console.log(testFrame.toConsoleOutput());
 console.log(chalk.yellow("3 times rotated 4x4 test Frame"));
 testFrame.rotate(2);
 console.log(testFrame.toConsoleOutput());
+
+console.log(chalk.yellow("To snake"));
+let snake = testFrame.snakeUnmap();
+let output = "";
+snake.forEach(color => {
+    output += chalk.rgb(color.getR(), color.getG(), color.getB())("██ ");
+});
+console.log(output);

@@ -10,6 +10,10 @@ export class Color {
         this.color = [r, g, b];
     }
 
+    clone(): Color {
+        return new Color(this.color[0], this.color[1], this.color[2]);
+    }
+
     getR(): number {return this.color[0]}
     getG(): number {return this.color[1]}
     getB(): number {return this.color[2]}
@@ -81,6 +85,34 @@ export class Frame {
             this.rotate90deg();
         }
     }
+
+    clone(): Frame {
+        let newGrid: Array<Array<Color>> = [];
+        for (let x = 0; x < this.grid.length; x++) {
+            newGrid.push([])
+            for (let y = 0; y < this.grid.length; y++) {
+                newGrid[x][y] = this.grid[x][y].clone();
+            }
+        }
+        return Frame.fromGrid(newGrid);
+    }
+
+    snakeUnmap(): Array<Color> {
+        let snake: Array<Color> = [];
+
+        let reverse: boolean = false;
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid.length; x++) {
+                if (!reverse)
+                    snake.push(this.grid[y][x]);
+                else
+                    snake.push(this.grid[y][this.grid.length - x - 1].clone());
+            }
+            reverse = !reverse;
+        }
+
+        return snake;
+    }
 }
 
 
@@ -89,11 +121,13 @@ export class Frame {
  */
 export class TableScreen {
     ws281x: any;
-    currentFrame;
-    config;
+    currentFrame: Frame;
+    config: any;
+    emulate: boolean;
     
     constructor(emulate: boolean, config: any) {
         this.config = config;
+        this.emulate = emulate;
         if (!emulate)
             this.ws281x = require('rpi-ws281x-v2');
         
@@ -102,13 +136,14 @@ export class TableScreen {
 
     init() {
         let config = this.config;
-        this.ws281x.configure({
-            leds: Math.pow(config.width, 2), 
-            gpio: config.gpio,
-            type: "GRB", 
-            dma: config.dma, 
-            brightness: config.brightness
-        });
+        if (!this.emulate)
+            this.ws281x.configure({
+                leds: Math.pow(config.width, 2), 
+                gpio: config.gpio,
+                type: "GRB", 
+                dma: config.dma, 
+                brightness: config.brightness
+            });
     }
 
     updateScreen() {
