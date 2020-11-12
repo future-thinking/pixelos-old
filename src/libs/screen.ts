@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import colorConvert from "color-convert";
 
 /**
  * Way to store a color for a pixel;
@@ -97,16 +98,17 @@ export class Frame {
         return Frame.fromGrid(newGrid);
     }
 
-    snakeUnmap(): Array<Color> {
+    snakeUnmap(horizontal: boolean): Array<Color> {
         let snake: Array<Color> = [];
 
         let reverse: boolean = false;
         for (let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid.length; x++) {
-                if (!reverse)
-                    snake.push(this.grid[y][x]);
+                let xC: number = (reverse ? this.grid.length - x - 1 : x);
+                if (horizontal)
+                    snake.push(this.grid[y][xC].clone());
                 else
-                    snake.push(this.grid[y][this.grid.length - x - 1].clone());
+                    snake.push(this.grid[xC][y].clone());
             }
             reverse = !reverse;
         }
@@ -124,10 +126,12 @@ export class TableScreen {
     currentFrame: Frame;
     config: any;
     emulate: boolean;
+    horizontal: boolean;
     
     constructor(emulate: boolean, config: any) {
         this.config = config;
         this.emulate = emulate;
+        this.horizontal = config.orientation.direction == "horizontal";
         if (!emulate)
             this.ws281x = require('rpi-ws281x-v2');
         
@@ -146,6 +150,13 @@ export class TableScreen {
             });
     }
 
-    updateScreen() {
+    updateScreen(): void {
+        let snake = this.currentFrame.snakeUnmap(this.horizontal);
+        let pixels: Array<any> = [];
+        snake.forEach(color => {
+            pixels.push("0x" + colorConvert.rgb.hex([color.getG(), color.getR(), color.getB()]));
+        })
+
+        this.ws281x.render(pixels);
     }
 }
