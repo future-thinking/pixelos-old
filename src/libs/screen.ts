@@ -138,7 +138,7 @@ export class TableScreen {
         this.currentFrame = new Frame(config.width);
     }
 
-    init() {
+    init(): void {
         let config = this.config;
         if (!this.emulate)
             this.ws281x.configure({
